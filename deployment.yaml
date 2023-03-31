@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+  labels:
+    run: app-pod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: app-pod
+  template:
+    metadata:
+      labels:
+        run: app-pod
+    spec:
+      containers:
+      - name: myapp
+        image: gideonoki/myapp:3
+        ports:
+        - containerPort: 3000
+        envFrom:
+          -  secretRef:
+               name: db-secret
+        env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              configMapKeyRef:
+                name: db-config
+                key: MONGO_INITDB_ROOT_USERNAME
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: db-config
+                key: MONGO_INITDB_ROOT_PASSWORD
+          - name: MONGO_DB_ADD
+            valueFrom:
+              configMapKeyRef:
+                name: db-config
+                key: MONGO_DB_ADD
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-deployment
+  labels:
+    run: db-pod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: db-pod
+  template:
+    metadata:
+      labels:
+        run: db-pod
+    spec:
+      containers:
+      - name: db
+        image: mongo
+        ports:
+        - containerPort: 27017
+        envFrom:
+          -  secretRef:
+               name: db-secret
+        env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              configMapKeyRef:
+                name: db-config
+                key: MONGO_INITDB_ROOT_USERNAME
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: db-config
+                key: MONGO_INITDB_ROOT_PASSWORD
+        volumeMounts:
+          - mountPath: /data/db
+            name: db-data
+      volumes:
+       - name: db-data
+         hostPath:
+      # directory location on host
+           path: /data
+      # this field is optional
+           type: DirectoryOrCreate
