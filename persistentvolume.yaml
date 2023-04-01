@@ -8,7 +8,7 @@ spec:
   storageClassName: standard
   volumeMode: Filesystem
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   hostPath:
     path: /db-pv
     type: DirectoryOrCreate
@@ -24,5 +24,4 @@ spec:
   storageClassName: standard
   volumeName: db-pv
   accessModes:
-     - ReadWriteOnce
-
+     - ReadWriteMany

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-state
+spec:
+  selector:
+    matchLabels:
+      run: db-pod
+  serviceName: "db-service"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: db-pod
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: db-app
+        image: mongo
+        ports:
+        - containerPort: 27017
+        envFrom:
+          - secretRef:
+              name: db-secret
+        volumeMounts:
+          - mountPath: /data/db
+            name: db-data
+  volumeClaimTemplates:
+    - metadata:
+        name: db-data
+      spec:
+        storageClassName: ""
+        accessModes: ["ReadWriteMany"]
+        resources:
+          requests:
+            storage: 300Mi

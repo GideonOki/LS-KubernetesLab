@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: app-job
+spec:
+  completions: 1
+  backoffLimit: 4
+  activeDeadlineSeconds: 100
+  template:
+    spec:
+      containers:
+      - name: myapp
+        image: gideonoki/myapp:1
+    restartPolicy: Never

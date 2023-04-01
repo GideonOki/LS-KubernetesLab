@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox
+spec:
+  volumes:
+  - name: db-pv
+    persistentVolumeClaim:
+      claimName: db-pvc
+  containers:
+  - image: busybox
+    name: busybox
+    volumeMounts:
+    - mountPath: /mnt
+      name: db-pv
